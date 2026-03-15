@@ -48,6 +48,7 @@ export function init(data) {
 export function clearCalculator() {
   // Reset static inputs to defaults
   const set = (id, val) => { const el = getEl(id); if (el) el.value = val; };
+  set('sl-job-name',      '');
   set('sl-dwelling-type', 'new');
   set('sl-method',        'standard');
   set('sl-sqft',          '2000');
@@ -241,6 +242,7 @@ function collectInputs() {
   const sv = id => getEl(id)?.value || '';
   const iv = id => parseInt(getEl(id)?.value)   || 0;
   return {
+    jobName:          sv('sl-job-name'),
     dwellingType:     sv('sl-dwelling-type'),
     method:           sv('sl-method'),
     sqft:             v('sl-sqft'),
@@ -669,6 +671,7 @@ function updatePrintSummary(inputs) {
     : inputs.dwellingType === 'existing' ? 'Optional Method — NEC 220.83 (Existing)'
     : 'Optional Method — NEC 220.82 (New)';
   el.innerHTML = `
+    ${inputs.jobName ? `<div class="sl-print-job-name">${escapeHTML(inputs.jobName)}</div>` : ''}
     <div class="sl-print-summary-grid">
       <span><strong>Dwelling:</strong> ${inputs.dwellingType === 'new' ? 'New' : 'Existing'}</span>
       <span><strong>Method:</strong> ${methodLabel}</span>
@@ -700,7 +703,6 @@ function renderResults(fullResult, shedResult, inputs, d) {
   }
 
   container.innerHTML = `
-    <div class="sl-results-method-badge">${methodLabel}</div>
     ${adequacyHtml}
     <h3 class="sl-results-group-title">Calculated Load</h3>
     ${stepsTable(fullResult.steps)}

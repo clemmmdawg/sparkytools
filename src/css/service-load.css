@@ -41,6 +41,8 @@
 }
 
 .sl-field--wide { flex: none; }
+.sl-field--full { flex: 1 1 100%; }
+.sl-optional-label { font-weight: 400; color: var(--text-muted); font-size: 0.78rem; }
 
 /* ── Labels with NEC refs ── */
 .sl-field label {
@@ -667,6 +669,11 @@ input[type="checkbox"].sl-themed-cb:checked::after {
     padding:       8px 12px;
     margin-bottom: 12px;
     background:    #f8f8f8;
+  }
+  .sl-print-job-name {
+    font-size:     10pt;
+    font-weight:   700;
+    margin-bottom: 6px;
   }
   .sl-print-summary-grid {
     display:   grid;
