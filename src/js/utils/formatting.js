@@ -4,6 +4,17 @@
  */
 
 /**
+ * Escapes HTML special characters to prevent XSS when inserting user-supplied
+ * text into innerHTML template strings.
+ * @param {string} str - Raw user input
+ * @returns {string} HTML-safe string
+ */
+export function escapeHTML(str) {
+  const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+  return String(str).replace(/[&<>"']/g, m => map[m]);
+}
+
+/**
  * Returns a random hex color string suitable for <input type="color">.
  * Used to assign unique colors to conductor rows in visualizers.
  * @returns {string} Hex color (e.g., "#3fa5d2")

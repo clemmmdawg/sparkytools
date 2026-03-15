@@ -28,6 +28,10 @@
     <!-- Browser tab / toolbar color — kept in sync with --primary -->
     <meta name="theme-color" content="#2c3e50">
 
+    <!-- Content Security Policy — blocks inline scripts and unauthorised external scripts -->
+    <meta http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'none';">
+
     <title>SparkyTools — NEC Electrical Calculators</title>
     <meta name="description" content="Free, open-source NEC electrical calculators: conduit fill, voltage drop, box fill, and pull box sizing. No account required. Works offline.">
   </head>
@@ -555,6 +559,12 @@
         <!-- ── 1. Calculation Setup ───────────────────────────────────── -->
         <fieldset class="sl-fieldset">
           <legend class="sl-legend">Calculation Setup</legend>
+          <div class="sl-row">
+            <div class="sl-field sl-field--full">
+              <label for="sl-job-name">Job Name / Address <span class="sl-optional-label">(optional)</span></label>
+              <input type="text" id="sl-job-name" class="sl-static-input" placeholder="e.g. 123 Main St — Smith Residence" aria-label="Job name or address" maxlength="120">
+            </div>
+          </div>
           <div class="sl-row">
             <div class="sl-field sl-field--wide">
               <label for="sl-dwelling-type">

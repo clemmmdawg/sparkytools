@@ -70,13 +70,21 @@ self.addEventListener('install', event => {
       .then(cache =>
         Promise.allSettled(
           APP_ASSETS.map(url =>
-            cache.add(url).catch(err =>
-              console.warn(`SW: failed to cache ${url}:`, err)
-            )
+            cache.add(url).catch(err => {
+              console.warn(`SW: failed to cache ${url}:`, err);
+              return { failed: url };
+            })
           )
         )
       )
-      .then(() => self.skipWaiting())
+      .then(results => {
+        const failed = results.filter(r => r.value?.failed);
+        if (failed.length > 0) {
+          console.error(`SW: ${failed.length} asset(s) failed to cache — app may not work fully offline:`,
+            failed.map(r => r.value.failed));
+        }
+        return self.skipWaiting();
+      })
   );
 });
 

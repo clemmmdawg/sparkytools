@@ -50,7 +50,7 @@ export function calculate() {
   const groundVal = parseInt(groundsEl.value);
 
   let totalRequired = 0;
-  let largestAWG = Infinity;
+  let largestAWG = null;
 
   document.querySelectorAll(".box-wire-row").forEach(row => {
     const size = parseInt(row.querySelector(".bw-size").value);
@@ -60,10 +60,10 @@ export function calculate() {
 
     totalRequired += qty * volPer;
     row.querySelector(".unit-vol-label").textContent = `${volPer} in³`;
-    if (size < largestAWG) largestAWG = size;
+    if (largestAWG === null || size < largestAWG) largestAWG = size;
   });
 
-  // Use largest conductor's volume for deductions
+  // Use largest conductor's volume for deductions (fall back to #14 if no wires added)
   const unitVol = necData.boxfill.volumePerWire[largestAWG] ?? necData.boxfill.volumePerWire[14];
 
   // NEC 314.16(B)(2): Each device = 2× unit volume
