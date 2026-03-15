@@ -89,10 +89,17 @@ if (document.readyState === "loading") {
 function showUpdateToast() {
   const toast = document.createElement('div');
   toast.className = 'update-toast';
-  toast.innerHTML = `
-    <span>⚡ SparkyTools updated!</span>
-    <button class="update-toast__btn" onclick="location.reload()">Reload</button>
-  `;
+
+  const msg = document.createElement('span');
+  msg.textContent = '⚡ SparkyTools updated!';
+
+  const btn = document.createElement('button');
+  btn.className = 'update-toast__btn';
+  btn.textContent = 'Reload';
+  btn.addEventListener('click', () => location.reload());
+
+  toast.appendChild(msg);
+  toast.appendChild(btn);
   document.body.appendChild(toast);
 
   // Auto-dismiss after 12 s in case the user ignores it

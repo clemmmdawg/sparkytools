@@ -11,7 +11,7 @@
  * Each row supports: Shed (exclude from generator calc) and New (220.83 annotation).
  */
 
-import { getEl } from '../utils/formatting.js';
+import { getEl, escapeHTML } from '../utils/formatting.js';
 
 let necData = null;
 
@@ -121,6 +121,8 @@ const HVAC_OPTIONS = [
   { value: 'heating', text: 'Heat Pump — Heating Mode',   defaultVA: 3600  },
 ];
 
+const MAX_ROWS_PER_KIND = 20;
+
 function addRow(kind) {
   const listId = {
     cooking: 'sl-cooking-list',
@@ -129,6 +131,7 @@ function addRow(kind) {
   }[kind];
   const list = getEl(listId);
   if (!list) return;
+  if (list.children.length >= MAX_ROWS_PER_KIND) return;
   const row = document.createElement('div');
   row.className = `sl-load-row sl-${kind}-row`;
   row.innerHTML  = buildRowHTML(kind);
@@ -325,7 +328,7 @@ function runStandard(inputs, d, ex) {
       total += demandVA;
     }
     inputs.cookingLoads.forEach((load, i) => {
-      const name = load.type === 'Custom' && load.name ? load.name : (load.type || 'Appliance');
+      const name = escapeHTML(load.type === 'Custom' && load.name ? load.name : (load.type || 'Appliance'));
       steps.push({
         label: `  └ ${name} (${load.watts.toLocaleString()} VA)`,
         nec: '220.55', va: ex(load) ? 0 : load.watts,
@@ -373,7 +376,7 @@ function runStandard(inputs, d, ex) {
   // 6. Custom
   inputs.customLoads.forEach(load => {
     const va = ex(load) ? 0 : load.watts;
-    steps.push({ label: `${load.name || 'Custom Load'} (${load.watts.toLocaleString()} VA)`, nec: 'Custom', va, shed: load.shed, isNew: load.isNew, note: ex(load) ? 'Load shed — excluded' : 'At 100%' });
+    steps.push({ label: `${escapeHTML(load.name || 'Custom Load')} (${load.watts.toLocaleString()} VA)`, nec: 'Custom', va, shed: load.shed, isNew: load.isNew, note: ex(load) ? 'Load shed — excluded' : 'At 100%' });
     total += va;
   });
 
@@ -403,7 +406,7 @@ function runOptional(inputs, d, ex) {
       });
     }
     inputs.cookingLoads.forEach(load => {
-      const name = load.type === 'Custom' && load.name ? load.name : (load.type || 'Appliance');
+      const name = escapeHTML(load.type === 'Custom' && load.name ? load.name : (load.type || 'Appliance'));
       allLoads.push({
         label: `  └ ${name} (${load.watts.toLocaleString()} VA)`,
         nec: necRef, va: ex(load) ? 0 : load.watts,
@@ -425,7 +428,7 @@ function runOptional(inputs, d, ex) {
 
   // NOTE: HVAC is NOT added to allLoads — per 220.82(C) it is added after the demand factor
 
-  inputs.customLoads.forEach(load => allLoads.push({ label: `${load.name || 'Custom Load'} (${load.watts.toLocaleString()} VA)`, nec: 'Custom', va: ex(load) ? 0 : load.watts, shed: load.shed, isNew: load.isNew }));
+  inputs.customLoads.forEach(load => allLoads.push({ label: `${escapeHTML(load.name || 'Custom Load')} (${load.watts.toLocaleString()} VA)`, nec: 'Custom', va: ex(load) ? 0 : load.watts, shed: load.shed, isNew: load.isNew }));
 
   allLoads.forEach(l => steps.push(l));
   const subtotal  = allLoads.reduce((s, l) => s + l.va, 0);
@@ -574,7 +577,7 @@ function computeHVAC(hvacLoads, ex) {
 
 function buildFixedList(inputs) {
   return inputs.fixedLoads.map(l => ({
-    label: `${l.type === 'Custom' && l.name ? l.name : (l.type || 'Appliance')} (${l.watts.toLocaleString()} VA)`,
+    label: `${escapeHTML(l.type === 'Custom' && l.name ? l.name : (l.type || 'Appliance'))} (${l.watts.toLocaleString()} VA)`,
     watts: l.watts, shed: l.shed, isNew: l.isNew,
   })).filter(l => l.watts > 0);
 }
