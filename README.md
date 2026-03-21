@@ -1,6 +1,4 @@
-# ⚡ SparkyTools — Dev
-
-> **This is the active development repository.** Features and changes are developed here before being promoted to the [stable repo](https://github.com/clemmmdawg/sparkytools). Expect work-in-progress code, breaking changes, and experimental features on the main branch.
+# [Sparky ⚡ Tools](https://sparkytools.live)
 
 **Free, open-source NEC electrical calculators for electricians.**
 
