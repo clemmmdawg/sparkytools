@@ -10,21 +10,31 @@
 
 import { initNavigation, initTooltips } from './ui/navigation.js';
 import { initTheme } from './ui/theme.js';
+import { init as initEasterEggs } from './ui/easter-eggs.js';
 import * as ConduitFill from './calculators/conduit-fill.js';
 import * as VoltageDrop from './calculators/voltage-drop.js';
 import * as BoxFill from './calculators/box-fill.js';
 import * as PullBox from './calculators/pull-box.js';
 import * as ServiceLoad from './calculators/service-load.js';
 import * as Transformer from './calculators/transformer.js';
+import * as OhmsLaw from './calculators/ohms-law.js';
+import * as PanelSchedule from './calculators/panel-schedule.js';
 
 /**
  * Main initialization function
  */
 async function init() {
   try {
+    // Initialize UI immediately — navigation must run before any async work so
+    // the URL hash is honoured on page load regardless of data-load timing.
+    initNavigation();
+    initTooltips();
+    initTheme();
+    initEasterEggs();
+
     // Load NEC data (defaults to 2023)
     const necData = await NECDataLoader.loadNECData("2023");
-    
+
     // Initialize all calculators with data
     ConduitFill.init(necData);
     VoltageDrop.init(necData);
@@ -32,11 +42,8 @@ async function init() {
     PullBox.init(necData);
     ServiceLoad.init(necData);
     Transformer.init(necData);
-    
-    // Initialize UI components
-    initNavigation();
-    initTooltips();
-    initTheme();
+    OhmsLaw.init(necData);
+    PanelSchedule.init();
     
     console.log("⚡ SparkyTools initialized successfully");
 

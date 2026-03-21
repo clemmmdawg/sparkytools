@@ -44,14 +44,16 @@
 
 /* ── Labels with NEC refs ── */
 .sl-field label {
-  font-size:   0.82rem;
-  font-weight: 600;
-  color:       var(--text);
-  display:     flex;
-  align-items: center;
-  gap:         6px;
-  flex-wrap:   wrap;
-  line-height: 1.3;
+  font-size:      0.72rem;
+  font-weight:    600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color:          var(--text-muted);
+  display:        flex;
+  align-items:    center;
+  gap:            6px;
+  flex-wrap:      wrap;
+  line-height:    1.3;
 }
 
 .sl-nec-ref {
@@ -92,7 +94,7 @@
   align-items: center;
   gap:         8px;
   flex-wrap:   wrap;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
   padding:     10px 12px;
   background:  var(--card-bg);
   border:      1px solid var(--divider);
@@ -190,7 +192,7 @@
 /* Adjustment/demand factor rows */
 .sl-steps-table tr.is-adjustment td {
   font-style: italic;
-  color:      var(--text-muted);
+  color:      var(--text);
   background: color-mix(in srgb, var(--accent-red) 4%, transparent);
 }
 
@@ -202,21 +204,22 @@
 
 /* Shed rows */
 .sl-steps-table tr.is-shed-row td {
-  opacity:         0.45;
-  text-decoration: line-through;
-  color:           var(--text-muted);
+  opacity: 0.45;
+  color:   var(--text-muted);
 }
 
 .sl-shed-tag {
   display:       inline-block;
-  background:    var(--accent-orange);
-  color:         #fff;
+  background: color-mix(in srgb, var(--accent-orange) 10%, transparent);
+  color: var(--accent-orange);
   font-size:     0.65rem;
   font-weight:   700;
   padding:       2px 5px;
   border-radius: 3px;
   letter-spacing: 0.04em;
   vertical-align: middle;
+  border: 1px solid color-mix(in srgb, var(--accent-orange) 30%, transparent);
+  
 }
 
 /* NEC badge in table */
@@ -404,7 +407,29 @@
 #service-tool.has-existing.has-optional .sl-new-wrap { display: flex; }
 
 /* ── Circuit steppers ── */
-.sl-circuit-row { margin-bottom: 12px; }
+.sl-circuit-row {
+  flex-direction: row;
+  align-items:    flex-start;
+  flex-wrap:      wrap;
+  margin-bottom:  12px;
+}
+
+/* Sq ft field spans the full row so the steppers wrap to the line below */
+.sl-circuit-row .sl-field--wide {
+  flex-basis: 100%;
+}
+
+.sl-circuit-row .sl-field:not(.sl-field--wide) {
+  flex: 1;
+  min-width: 140px;
+}
+
+@media (max-width: 480px) {
+  .sl-circuit-row .sl-field:not(.sl-field--wide) {
+    flex: none;
+    min-width: 0;
+  }
+}
 
 .sl-stepper {
   display:     flex;
@@ -512,6 +537,10 @@
 .sl-shed-wrap { color: var(--accent-orange); }
 .sl-new-wrap  { color: var(--accent-green);  }
 
+/* Inline text variants for use outside the checkbox label (e.g. tool-desc) */
+.sl-shed-text { color: var(--accent-orange); font-weight: 600; }
+.sl-new-text  { color: var(--accent-green);  font-weight: 600; }
+
 /* ── Themed checkboxes ── */
 input[type="checkbox"].sl-themed-cb {
   appearance:         none;
@@ -612,6 +641,17 @@ input[type="checkbox"].sl-themed-cb:checked::after {
 .sl-adequacy--ok   { background: color-mix(in srgb, var(--accent-green) 12%, transparent); border: 1px solid color-mix(in srgb, var(--accent-green) 30%, transparent); color: var(--text); }
 .sl-adequacy--over { background: color-mix(in srgb, var(--danger, #e74c3c) 12%, transparent); border: 1px solid color-mix(in srgb, var(--danger, #e74c3c) 30%, transparent); color: var(--text); }
 
+/* ── Responsive overrides (≤480px) ── */
+@media (max-width: 480px) {
+  /* Stepper: tighten buttons and value field */
+  .sl-step-btn { width: 32px; }
+  .sl-step-val { width: 44px; }
+
+  /* Load row type select: allow narrower min-width so it doesn't force row wrap */
+  .sl-load-row .sl-type { min-width: 100px; }
+  .sl-load-row .sl-name { min-width: 80px; }
+}
+
 /* ── Print-only elements — hidden on screen ── */
 .sl-print-header,
 .sl-print-summary { display: none; }
@@ -622,19 +662,46 @@ input[type="checkbox"].sl-themed-cb:checked::after {
 /* ═══════════════════════════════════════════════════════════════════════════ */
 
 @media print {
+  /* ── Force light-mode tokens regardless of user's theme preference ── */
+  :root {
+    --bg:             #eceff1;
+    --card-bg:        #ffffff;
+    --surface-row:    #f8f9fa;
+    --surface-inset:  #f9fafb;
+    --border:         #dfe6e9;
+    --divider:        #eeeeee;
+    --primary:        #2c3e50;
+    --text:           #2c3e50;
+    --text-muted:     rgba(44, 62, 80, 0.55);
+    --warn-bg:        #fff8e1;
+    --warn-border:    #ffe082;
+    --warn-text:      #5d4037;
+    --shadow:         none;
+    --nav-bg:         #dfe6e9;
+    --status-ok-bg:   #d4edda;
+    --status-ok-text: #155724;
+    --status-err-bg:  #f8d7da;
+    --status-err-text:#721c24;
+    --danger:         #e74c3c;
+    --svg-conduit-bg: #eceff1;
+    --svg-box-stroke: #34495e;
+    --svg-dim-color:  #546e7a;
+    --svg-placeholder:#b0bec5;
+    --svg-wh-label:   #cfd8dc;
+  }
+
   /* ── Hide everything except the service-tool section ── */
   .site-header,
   .site-footer,
   .nav-bar,
   .drawer-overlay,
   .drawer,
-  .theme-toggle,
   .update-toast,
   .add-btn,
   .sl-shed-wrap,
   .sl-new-wrap,
   .remove-btn,
-  .tool-section:not(#service-tool),
+  .tool-section:not(.active),
   /* Hide all input fieldsets inside the service tool */
   #service-tool .sl-fieldset,
   #service-tool .tool-desc,
@@ -691,7 +758,10 @@ input[type="checkbox"].sl-themed-cb:checked::after {
 
   .sl-nec-badge  { color: #000 !important; background: #eee !important; font-size: 7pt; }
   .sl-step-note  { color: #555 !important; }
-  .sl-shed-tag   { background: #888 !important; }
+  .sl-shed-tag   {
+    background: #fde9d1 !important;
+    color: #e7861e !important;
+  }
   .sl-nc-tag     { background: #ccc !important; color: #333 !important; }
   .sl-new-badge  { background: #e8f5e9 !important; color: #2e7d32 !important; border-color: #a5d6a7 !important; }
 

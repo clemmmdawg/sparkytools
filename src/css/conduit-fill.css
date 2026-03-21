@@ -23,6 +23,9 @@
   gap:                   8px;
   align-items:           center;
   margin-bottom:         8px;
+  background:            var(--surface-row);
+  padding:               6px 10px;
+  border-radius:         6px;
 }
 
 .wire-row select,
@@ -61,7 +64,7 @@ input[type="color"].color-swatch::-moz-color-swatch            { border: none; b
 .visualizer-container {
   width:  180px;
   height: 180px;
-  margin: 24px auto;
+  margin: 20px auto;
 }
 
 #conduit-svg {
