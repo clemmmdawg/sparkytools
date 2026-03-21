@@ -1,4 +1,6 @@
-# ⚡ SparkyTools
+# ⚡ SparkyTools — Dev
+
+> **This is the active development repository.** Features and changes are developed here before being promoted to the [stable repo](https://github.com/clemmmdawg/sparkytools). Expect work-in-progress code, breaking changes, and experimental features on the main branch.
 
 **Free, open-source NEC electrical calculators for electricians.**
 
@@ -8,7 +10,7 @@ SparkyTools is a mobile-first progressive web app (PWA) that provides accurate, 
 
 ## Calculators
 
-### ⚡ Residential Service Load — NEC 220
+### ⚡ Residential Service Load — NEC 220 / 250
 Calculates the total connected load for a dwelling unit using either the Standard Method (NEC 220.40–220.53) or the Optional Method (NEC 220.82 / 220.83).
 
 - General lighting & receptacles at 3 VA/sq ft (NEC 220.12)
@@ -22,7 +24,7 @@ Calculates the total connected load for a dwelling unit using either the Standar
 - Custom loads at 100% nameplate (NEC 220.14)
 - Load shedding mode for generator sizing
 - Existing service adequacy check (NEC 220.83)
-- Results: calculated VA, amps at 240 V, recommended service size, service entrance conductor per Table 310.16 (75 °C Cu)
+- Results: calculated VA, amps at 240 V, recommended service size, service entrance conductor per Table 310.16 (75 °C Cu), neutral conductor per NEC 220.61 (with 220.61(B)(1) cooking/dryer reduction), grounding electrode conductor per Table 250.66
 
 ### 🔌 Transformer — NEC 450 / 240.21(C)
 Sizes overcurrent protection and conductors for single- and three-phase transformers.
@@ -74,6 +76,22 @@ Calculates the minimum pull box dimensions for conductors 4 AWG and larger.
 - Add conduit entries on any of four walls
 - SVG face diagram with conduit entry/exit points and dimension callouts
 
+### 🔢 Ohm's Law / Power Wheel
+Solve for any one of **P, I, E, R** given any two known values.
+
+- Voltage (V), current (A), resistance (Ω), power (W)
+- Enter any two fields — the remaining two calculate instantly
+- Reference: Ohm's Law (V = IR) and Power Law (P = IV)
+
+### 🗂 Panel Schedule
+Document and analyze a residential or light-commercial loadcenter.
+
+- Circuit types: standard (1-pole / 2-pole), tandem, complex (3- and 4-pole), Empty, Spare
+- Per-slot circuit numbers alongside a phase (A / B / C) spine
+- Wire type and conduit type per circuit
+- Mobile tab layout — left and right sides switchable
+- Full print layout with mirrored circuit columns and panel header
+
 ---
 
 ## Features
@@ -107,8 +125,8 @@ Calculates the minimum pull box dimensions for conductors 4 AWG and larger.
 No build step required. Clone the repo and open `index.html` directly in a browser, or serve it with any static file server:
 
 ```bash
-git clone https://github.com/clemmmdawg/sparkytools.git
-cd sparkytools
+git clone https://github.com/clemmmdawg/sparkytools-dev.git
+cd sparkytools-dev
 
 # Any static server works, e.g.:
 npx serve .
@@ -123,7 +141,7 @@ Then open `http://localhost:8080` in your browser. The service worker will cache
 ## Project Structure
 
 ```
-sparkytools/
+sparkytools-dev/
 ├── index.html                   # Single-page application shell
 ├── service-worker.js            # PWA offline caching
 ├── favicon.ico
@@ -147,7 +165,7 @@ sparkytools/
 │   └── data/2023/               # NEC data JSON (reference copies)
 │
 ├── pwa/manifest.json
-└── public/icons/
+└── img/
 ```
 
 ---

@@ -15,6 +15,10 @@
     <link rel="stylesheet" href="src/css/pull-box.css">
     <link rel="stylesheet" href="src/css/service-load.css">
     <link rel="stylesheet" href="src/css/transformer.css">
+    <link rel="stylesheet" href="src/css/ohms-law.css">
+    <link rel="stylesheet" href="src/css/panel-schedule.css">
+
+    <link rel="icon" type="image/x-icon" href="img/favicon.ico">
 
     <!-- PWA manifest -->
     <link rel="manifest" href="pwa/manifest.json">
@@ -23,7 +27,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="SparkyTools">
-    <link rel="apple-touch-icon" href="public/icons/bolt.png">
+    <link rel="apple-touch-icon" href="img/bolt.png">
 
     <!-- Browser tab / toolbar color — kept in sync with --primary -->
     <meta name="theme-color" content="#2c3e50">
@@ -47,10 +51,6 @@
 
       <!-- ── Sticky top bar ── -->
       <div class="nav-bar" role="navigation" aria-label="Electrical Tools">
-        <div class="nav-bar-title">
-          <span class="nav-accent-dot" id="nav-accent-dot"></span>
-          <span id="nav-bar-label">Service Sizing</span>
-        </div>
         <button class="nav-bar-btn" id="nav-drawer-btn"
                 aria-label="Open calculator menu"
                 aria-expanded="false"
@@ -59,6 +59,9 @@
           <span class="hamburger-line"></span>
           <span class="hamburger-line"></span>
         </button>
+        <div class="nav-bar-title">
+          <span id="nav-bar-label">Service Sizing</span>
+        </div>
       </div>
 
 
@@ -71,6 +74,8 @@
         <header class="card-header">
           <h2 id="conduit-fill-heading">Conduit Fill Calculator</h2>
         </header>
+
+        <p class="tool-desc">Select conduit type and trade size, add conductors, and see fill percentage against NEC Chapter 9 limits. Minimum conduit size that keeps fill within limits is suggested automatically.</p>
 
         <div class="input-row">
           <div class="input-group">
@@ -141,6 +146,8 @@
         <header class="card-header">
           <h2 id="voltage-drop-heading">Voltage Drop Calculator</h2>
         </header>
+
+        <p class="tool-desc">Enter wire details and one-way run length to check voltage drop against the NEC-recommended 3% limit. Also shows the minimum wire size to keep the run within limits.</p>
 
         <div class="input-row">
           <div class="input-group">
@@ -215,6 +222,8 @@
         <header class="card-header">
           <h2 id="box-fill-heading">Box Fill Calculator</h2>
         </header>
+
+        <p class="tool-desc">Select a box and add conductors, devices, clamps, and equipment grounds. Calculates required fill volume per NEC 314.16 and shows how much volume remains.</p>
 
         <div class="input-row">
           <div class="input-group">
@@ -300,14 +309,7 @@
           <h2 id="pull-box-heading">Pull Box Sizing Calculator</h2>
         </header>
 
-        <div class="pb-visualizer-container" role="img" aria-label="Pull box face diagram">
-          <svg id="pb-svg" viewBox="0 0 300 220" aria-hidden="true" focusable="false">
-            <text x="150" y="110" text-anchor="middle" dominant-baseline="middle"
-                  fill="#b0bec5" font-size="13" font-family="Inter, sans-serif">
-              Add conduit runs to visualize
-            </text>
-          </svg>
-        </div>
+        <p class="tool-desc">Add conduit runs with their trade sizes, pull types, and entry/exit walls. Calculates minimum box dimensions per NEC 314.28 — 8× for straight pulls, 6× plus sum of opposing conduits for angle and U-pulls.</p>
 
         <div class="input-row">
           <div class="input-group">
@@ -370,6 +372,15 @@
         <div id="pb-status" class="status-pill" role="status" aria-live="polite">
           Add conduit runs to begin
         </div>
+
+        <div class="pb-visualizer-container" role="img" aria-label="Pull box face diagram">
+          <svg id="pb-svg" viewBox="0 0 300 220" aria-hidden="true" focusable="false">
+            <text x="150" y="110" text-anchor="middle" dominant-baseline="middle"
+                  fill="#b0bec5" font-size="13" font-family="Inter, sans-serif">
+              Add conduit runs to visualize
+            </text>
+          </svg>
+        </div>
       </section>
 
 
@@ -381,66 +392,115 @@
         <header class="card-header">
           <h2 id="transformer-heading">Transformer Calculator</h2>
         </header>
-        <p class="tool-desc">Select voltages, phase, and enter kVA — primary/secondary currents, OCPD, and conductor sizes update live.</p>
+        <p class="tool-desc">Select voltages and enter kVA — phase is inferred automatically. OCPD and conductor sizes update live.</p>
 
         <hr class="divider">
 
-        <!-- ── Inputs ── -->
-        <div class="tc-grid tc-grid--3">
+        <!-- ── Unified visual: inputs + one-line diagram ── -->
+        <div class="tc-visual">
 
-          <div class="tc-field">
-            <label for="tc-phase">Phase</label>
-            <select id="tc-phase">
-              <option value="1">1Ø  Single-Phase</option>
-              <option value="3">3Ø  Three-Phase</option>
-            </select>
+          <!-- Input strip -->
+          <div class="tc-vis-ctrl">
+            <div class="tc-vis-ctrl-pri">
+              <label class="tc-vis-label" for="tc-vpri">
+                Primary Voltage <span class="tc-nec-ref" data-tip="Line-to-line voltage feeding the primary winding.">L-L</span>
+              </label>
+              <select id="tc-vpri" class="tc-vis-select"><!-- populated by JS --></select>
+              <label class="tc-vis-label" for="tc-kva" style="margin-top:8px">kVA Rating</label>
+              <input id="tc-kva" class="tc-vis-input" type="number" placeholder="e.g. 75" min="0" step="1">
+            </div>
+            <div class="tc-vis-ctrl-sec">
+              <label class="tc-vis-label" for="tc-vsec">
+                Secondary Voltage <span class="tc-nec-ref" data-tip="L-N voltages (120 V, 277 V) are treated as single-phase regardless of primary selection.">L-L / L-N</span>
+              </label>
+              <select id="tc-vsec" class="tc-vis-select"><!-- populated by JS --></select>
+              <label class="tc-vis-label" for="tc-tap-option" style="margin-top:8px">
+                OCPD Location <span class="tc-nec-ref" data-tip="Where the secondary overcurrent device is installed. Affects minimum conductor sizing. NEC 240.21(C).">NEC 240.21(C)</span>
+              </label>
+              <select id="tc-tap-option" class="tc-vis-select">
+                <option value="at-terminals">At secondary terminals</option>
+                <option value="primary-ocpd">Primary OCPD only — 240.21(C)(1)</option>
+                <option value="10ft">≤ 10 ft tap — 240.21(C)(2)</option>
+                <option value="25ft">≤ 25 ft tap — 240.21(C)(3)</option>
+              </select>
+            </div>
           </div>
 
-          <div class="tc-field">
-            <label for="tc-vpri">
-              Primary Voltage
-              <span class="tc-nec-ref" data-tip="Line-to-line voltage feeding the primary winding.">L-L</span>
-            </label>
-            <select id="tc-vpri"><!-- populated by JS --></select>
-          </div>
+          <!-- One-line diagram -->
+          <div class="tc-vis-row">
 
-          <div class="tc-field">
-            <label for="tc-vsec">
-              Secondary Voltage
-              <span class="tc-nec-ref" data-tip="L-N voltages (120 V, 277 V) are treated as single-phase regardless of primary phase selection.">L-L / L-N</span>
-            </label>
-            <select id="tc-vsec"><!-- populated by JS --></select>
-          </div>
+            <!-- Primary OCPD -->
+            <div class="tc-vis-ocpd tc-vis-ocpd--pri">
+              <span class="tc-vis-ocpd-tag">OCPD</span>
+              <span class="tc-vis-ocpd-val" id="tc-vis-pri-ocpd">—</span>
+              <span class="tc-vis-ocpd-sub">Primary</span>
+            </div>
 
-          <div class="tc-field">
-            <label for="tc-kva">kVA Rating</label>
-            <input type="number" id="tc-kva" placeholder="e.g. 75" min="0.1" step="any">
-          </div>
+            <!-- Primary wire -->
+            <div class="tc-vis-wire tc-vis-wire--pri">
+              <div class="tc-vis-wire-above">
+                <span class="tc-vis-wire-size" id="tc-vis-pri-wire-size">—</span>
+                <span class="tc-vis-wire-req"  id="tc-vis-pri-wire-req"></span>
+              </div>
+              <div class="tc-vis-wire-below">
+                <span class="tc-vis-wire-fla" id="tc-vis-pri-fla">—</span>
+              </div>
+            </div>
 
-          <div class="tc-field">
-            <label for="tc-tap-option">
-              Secondary OCPD Location
-              <span class="tc-nec-ref" data-tip="Where the secondary overcurrent device is installed. Affects minimum conductor sizing. NEC 240.21(C).">NEC 240.21(C)</span>
-            </label>
-            <select id="tc-tap-option">
-              <option value="at-terminals">At secondary terminals</option>
-              <option value="primary-ocpd">Primary OCPD only — 240.21(C)(1)</option>
-              <option value="10ft">≤ 10 ft tap — 240.21(C)(2)</option>
-              <option value="25ft">≤ 25 ft tap — 240.21(C)(3)</option>
-            </select>
-          </div>
+            <!-- Transformer -->
+            <div class="tc-vis-xfmr">
+              <div class="tc-vis-xfmr-volts">
+                <span class="tc-vis-xfmr-v--pri" id="tc-vis-vpri">—</span>
+                <span class="tc-vis-xfmr-v--sec" id="tc-vis-vsec">—</span>
+              </div>
+              <svg class="tc-vis-xfmr-svg" viewBox="0 0 60 44"
+                   xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <!-- Primary coils (3 clockwise arcs, left of center) -->
+                <path class="tc-vis-coil tc-vis-coil--pri"
+                      d="M 19,8 A 4.667,4.667 0 0,1 19,17.33
+                                 A 4.667,4.667 0 0,1 19,26.67
+                                 A 4.667,4.667 0 0,1 19,36"
+                      fill="none" stroke-width="1.8"/>
+                <!-- Center divider -->
+                <line x1="30" y1="6" x2="30" y2="38" class="tc-vis-xfmr-div"/>
+                <!-- Secondary coils (3 counter-clockwise arcs, right of center) -->
+                <path class="tc-vis-coil tc-vis-coil--sec"
+                      d="M 41,8 A 4.667,4.667 0 0,0 41,17.33
+                                 A 4.667,4.667 0 0,0 41,26.67
+                                 A 4.667,4.667 0 0,0 41,36"
+                      fill="none" stroke-width="1.8"/>
+              </svg>
+              <div class="tc-vis-xfmr-info">
+                <span id="tc-vis-kva">—</span>
+                <!-- Phase badge: static for 480/208 V; toggleable for 240 V -->
+                <button type="button" id="tc-vis-phase" class="tc-vis-phase-badge">—</button>
+              </div>
+            </div>
 
-        </div>
+            <!-- Secondary wire -->
+            <div class="tc-vis-wire tc-vis-wire--sec">
+              <div class="tc-vis-wire-above">
+                <span class="tc-vis-wire-size" id="tc-vis-sec-wire-size">—</span>
+                <span class="tc-vis-wire-req"  id="tc-vis-sec-wire-req"></span>
+              </div>
+              <div class="tc-vis-wire-below">
+                <span class="tc-vis-wire-fla" id="tc-vis-sec-fla">—</span>
+              </div>
+            </div>
+
+            <!-- Secondary OCPD -->
+            <div class="tc-vis-ocpd tc-vis-ocpd--sec" id="tc-vis-sec-ocpd-box">
+              <span class="tc-vis-ocpd-tag">OCPD</span>
+              <span class="tc-vis-ocpd-val" id="tc-vis-sec-ocpd">—</span>
+              <span class="tc-vis-ocpd-sub">Secondary</span>
+            </div>
+
+          </div><!-- /.tc-vis-row -->
+        </div><!-- /.tc-visual -->
 
         <p class="tc-tap-desc" id="tc-tap-desc"></p>
 
         <hr class="divider">
-
-        <!-- ── Line Diagram ── -->
-        <div class="tc-diagram">
-          <svg id="tc-svg" viewBox="0 0 560 160" xmlns="http://www.w3.org/2000/svg"
-               role="img" aria-label="Transformer line diagram"></svg>
-        </div>
 
         <!-- ── Results ── -->
         <div id="tc-results" class="tc-results">
@@ -535,6 +595,75 @@
       </section>
 
 
+      <!-- ══════════════════════════════════════════════════════════
+           OHM'S LAW CALCULATOR
+           ══════════════════════════════════════════════════════════ -->
+      <section id="ohms-tool" class="card card--purple tool-section" aria-labelledby="ohms-law-heading">
+        <header class="card-header">
+          <h2 id="ohms-law-heading">Ohm's Law</h2>
+        </header>
+
+        <p class="tool-desc">Enter any two values — voltage, current, resistance, or power — and the remaining two are solved automatically.</p>
+
+        <!-- Row 1: Voltage + Current -->
+        <div class="input-row">
+          <div class="input-group">
+            <label for="ol-V">Voltage</label>
+            <div class="ol-field-wrap">
+              <input id="ol-V" type="number" placeholder="—" step="any" min="0" aria-label="Voltage in volts">
+              <span class="ol-unit">V</span>
+              <button class="remove-btn ol-clear-field" data-target="ol-V" aria-label="Clear voltage" title="Clear">×</button>
+            </div>
+          </div>
+          <div class="input-group">
+            <label for="ol-I">Current</label>
+            <div class="ol-field-wrap">
+              <input id="ol-I" type="number" placeholder="—" step="any" min="0" aria-label="Current in amps">
+              <span class="ol-unit">A</span>
+              <button class="remove-btn ol-clear-field" data-target="ol-I" aria-label="Clear current" title="Clear">×</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Row 2: Resistance + Power -->
+        <div class="input-row">
+          <div class="input-group">
+            <label for="ol-R">Resistance</label>
+            <div class="ol-field-wrap">
+              <input id="ol-R" type="number" placeholder="—" step="any" min="0" aria-label="Resistance in ohms">
+              <span class="ol-unit">Ω</span>
+              <button class="remove-btn ol-clear-field" data-target="ol-R" aria-label="Clear resistance" title="Clear">×</button>
+            </div>
+          </div>
+          <div class="input-group">
+            <label for="ol-P">Power</label>
+            <div class="ol-field-wrap">
+              <input id="ol-P" type="number" placeholder="—" step="any" min="0" aria-label="Power in watts">
+              <span class="ol-unit">W</span>
+              <button class="remove-btn ol-clear-field" data-target="ol-P" aria-label="Clear power" title="Clear">×</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action buttons -->
+        <div class="ol-actions">
+          <button id="ol-clear-btn" class="add-btn ol-btn-clear-all" type="button">↺ Clear</button>
+          <button id="ol-calc-btn" class="add-btn" type="button">Calculate</button>
+        </div>
+
+        <!-- Status / hint message -->
+        <p id="ol-status" class="ol-status ol-status--hint">Enter any two values, then press Calculate.</p>
+
+        <hr class="divider">
+
+        <!-- PIRE wheel reference image (to be supplied) -->
+        <div class="ol-pire-wrap" id="ol-pire-wrap">
+          <p class="ol-pire-placeholder">PIRE wheel image coming soon</p>
+        </div>
+
+      </section>
+
+
       <!-- ═══════════════════════════════════════════════════════════════════
            RESIDENTIAL SERVICE LOAD CALCULATOR
            NEC 220.40–220.53  Standard Method
@@ -553,8 +682,11 @@
         </div>
 
         <header class="card-header">
-          <h2 id="service-load-heading" data-tip="Calculates required service size per NEC 220.40–220.53 (Standard) and NEC 220.82/220.83 (Optional). Supports load shedding for generator/ATS sizing and 220.83 new-load annotation for existing dwellings.">Residential Service and Generator Sizing</h2>
+          <h2 id="service-load-heading">Residential Service and Generator Sizing</h2>
         </header>
+        <p class="tool-desc">
+          Calculates required residential service size using the NEC Standard Method (220.40–220.53) or Optional Method (220.82/220.83). Each load row has two checkboxes: <span class="sl-shed-text">SHED</span> excludes that load from a second calculation run, giving you a reduced service size for generator or ATS sizing; <span class="sl-new-text">NEW</span> marks the load as newly added, which is annotated in the 220.83 results for existing-dwelling upgrade documentation.
+        </p>
 
         <!-- ── 1. Calculation Setup ───────────────────────────────────── -->
         <fieldset class="sl-fieldset">
@@ -692,6 +824,133 @@
 
 
       <!-- ══════════════════════════════════════════════════════════
+           PANEL SCHEDULE CREATOR
+           ══════════════════════════════════════════════════════════ -->
+      <section id="panel-tool" class="card card--teal tool-section" aria-labelledby="panel-schedule-heading">
+
+        <!-- Print-only header -->
+        <div class="ps-print-header">
+          <table class="ps-print-hdr-tbl">
+            <tbody>
+              <tr>
+                <td class="ps-phdr-name" rowspan="2"><span id="ps-print-name">Panel Schedule</span></td>
+                <td class="ps-phdr-cell"><strong>Address:</strong> <span id="ps-print-address"></span></td>
+                <td class="ps-phdr-cell"><strong>Voltage:</strong> <span id="ps-print-voltage"></span></td>
+                <td class="ps-phdr-notes" rowspan="2"><strong>Notes:</strong> <span id="ps-print-notes"></span></td>
+              </tr>
+              <tr>
+                <td class="ps-phdr-cell"><strong>Job #:</strong> <span id="ps-print-job"></span></td>
+                <td class="ps-phdr-cell"><strong>Main CB:</strong> <span id="ps-print-main-type"></span><br><strong>Rating:</strong> <span id="ps-print-rating"></span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <header class="card-header">
+          <h2 id="panel-schedule-heading">Panel Schedule Creator</h2>
+        </header>
+        <p class="tool-desc">Build and print a professional electrical panel schedule. Add circuits to the left (odd) and right (even) sides, including 2-pole, 3-pole, tandem, triple, and quad breakers.</p>
+
+        <!-- ── Panel Information ──────────────────────────────────────── -->
+        <fieldset class="ps-fieldset">
+          <legend class="ps-legend">Panel Information</legend>
+          <div class="ps-info-grid">
+            <div class="ps-info-field">
+              <label for="ps-address">Property Address</label>
+              <input type="text" id="ps-address" class="ps-info-input" placeholder="123 Main St">
+            </div>
+            <div class="ps-info-field">
+              <label for="ps-panel-name">Panel Name</label>
+              <input type="text" id="ps-panel-name" class="ps-info-input" value="Panel A" placeholder="Panel A">
+            </div>
+            <div class="ps-info-field">
+              <label for="ps-main-type">Main Type</label>
+              <select id="ps-main-type" class="ps-info-input">
+                <option value="main-breaker">Main Breaker</option>
+                <option value="main-lug">Main Lug</option>
+              </select>
+            </div>
+            <div class="ps-info-field" id="ps-main-size-row">
+              <label for="ps-main-size">Main Breaker Size</label>
+              <select id="ps-main-size" class="ps-info-input"><!-- populated by JS --></select>
+            </div>
+            <div class="ps-info-field">
+              <label for="ps-voltage">Nominal Voltage</label>
+              <select id="ps-voltage" class="ps-info-input"><!-- populated by JS --></select>
+            </div>
+            <div class="ps-info-field">
+              <label for="ps-job-num">Job Number</label>
+              <input type="text" id="ps-job-num" class="ps-info-input" placeholder="e.g. 2024-001">
+            </div>
+            <div class="ps-info-field">
+              <label for="ps-panel-rating">Panel Rating</label>
+              <select id="ps-panel-rating" class="ps-info-input"><!-- populated by JS --></select>
+            </div>
+            <div class="ps-info-field">
+              <label for="ps-start-circuit">Start at Circuit #</label>
+              <input type="number" id="ps-start-circuit" class="ps-info-input" value="1" min="1" step="2" placeholder="1">
+            </div>
+            <div class="ps-info-field ps-info-field--full">
+              <label for="ps-notes">Notes</label>
+              <textarea id="ps-notes" class="ps-info-input ps-notes" rows="2" placeholder="Additional notes..."></textarea>
+            </div>
+          </div>
+        </fieldset>
+
+        <!-- ── Panel Schedule Grid ──────────────────────────────────── -->
+        <div class="ps-panel-wrap">
+
+          <!-- Mobile tab strip: Left / Right toggle (hidden on desktop) -->
+          <div class="ps-side-tabs" id="ps-side-tabs" role="tablist" aria-label="Toggle panel side">
+            <button class="ps-side-tab ps-side-tab--active" data-side="left" role="tab" aria-selected="true">Left — Odd</button>
+            <button class="ps-side-tab" data-side="right" role="tab" aria-selected="false">Right — Even</button>
+          </div>
+
+          <div class="ps-table-wrap">
+            <table class="ps-table ps-show-left" id="ps-table" aria-label="Panel circuit schedule">
+              <colgroup>
+                <col class="ps-col-ckt">
+                <col>
+                <col class="ps-col-spine">
+                <col>
+                <col class="ps-col-ckt">
+              </colgroup>
+              <thead>
+                <tr>
+                  <th class="ps-th ps-th--left ps-col-left"  colspan="2">Left — Odd Circuits</th>
+                  <th class="ps-th ps-th--spine"></th>
+                  <th class="ps-th ps-th--right ps-col-right" colspan="2">Right — Even Circuits</th>
+                </tr>
+              </thead>
+              <tbody id="ps-tbody"></tbody>
+              <tfoot>
+                <tr class="ps-tfoot-row">
+                  <td colspan="2" class="ps-tfoot-cell ps-col-left">
+                    <button class="add-btn" id="ps-add-left" type="button">+ Add Left Circuit</button>
+                  </td>
+                  <td class="ps-td-spine"></td>
+                  <td colspan="2" class="ps-tfoot-cell ps-col-right">
+                    <button class="add-btn" id="ps-add-right" type="button">+ Add Right Circuit</button>
+                  </td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+
+        <!-- ── Print table (hidden on screen, shown on print) ───────── -->
+        <div class="ps-print-table" id="ps-print-table" aria-hidden="true"></div>
+
+        <!-- ── Actions ───────────────────────────────────────────────── -->
+        <div class="ps-actions">
+          <button class="ps-clear-btn" id="ps-clear-btn" type="button">↺ Clear</button>
+          <button class="ps-print-btn" id="ps-print-btn" type="button">🖨 Print Schedule</button>
+        </div>
+
+      </section>
+
+
+      <!-- ══════════════════════════════════════════════════════════
            ABOUT
            ══════════════════════════════════════════════════════════ -->
       <section id="about-tool" class="card tool-section" aria-labelledby="about-heading">
@@ -699,7 +958,7 @@
         <div class="about-hero">
           <div class="about-hero-icon">⚡</div>
           <h2 id="about-heading">Sparky Tools</h2>
-          <span class="about-version">v10.5.0</span>
+          <span class="about-version">v1.0.0</span>
           <p class="about-tagline">Free, open-source NEC electrical calculators for electricians. No account, no tracking, works offline.</p>
         </div>
 
@@ -721,8 +980,7 @@
             <a class="about-link-btn" href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener">
               📄 View AGPL v3 License
             </a>
-            <!-- TODO: replace href with your actual repo URL -->
-            <a class="about-link-btn" href="https://github.com/sparkytools/sparkytools" target="_blank" rel="noopener">
+            <a class="about-link-btn" href="https://github.com/clemmmdawg/sparkytools" target="_blank" rel="noopener">
               💻 Source Code
             </a>
           </div>
@@ -742,9 +1000,6 @@
       </p>
     </footer>
 
-    <!-- Theme toggle — fixed bottom-left; managed by src/js/ui/theme.js -->
-    <button class="theme-toggle" aria-label="Switch to dark mode" title="Switch to dark mode">🌙</button>
-
     <!-- Drawer overlay + panel (position: fixed — outside .container) -->
     <div class="drawer-overlay" id="drawer-overlay" aria-hidden="true"></div>
     <nav class="drawer" id="nav-drawer" aria-label="Calculator menu">
@@ -756,47 +1011,75 @@
       <div class="drawer-group-title">NEC Calculators</div>
       <button class="drawer-item active"
               data-target="service-tool"
+              data-hash="service"
               data-label="Service Sizing"
               data-accent="var(--accent-red)">
         <span class="drawer-item-icon">⚡</span>Service Sizing
       </button>
       <button class="drawer-item"
               data-target="transformer-tool"
+              data-hash="transformer"
               data-label="Transformer"
               data-accent="var(--accent-blue)">
         <span class="drawer-item-icon">🔄</span>Transformer
       </button>
       <button class="drawer-item"
               data-target="conduit-tool"
+              data-hash="conduit"
               data-label="Conduit Fill"
               data-accent="var(--accent-blue)">
-        <span class="drawer-item-icon">🧰</span>Conduit Fill
+        <span class="drawer-item-icon">🔵</span>Conduit Fill
       </button>
       <button class="drawer-item"
               data-target="voltage-tool"
+              data-hash="voltage"
               data-label="Voltage Drop"
               data-accent="var(--accent-yellow)">
-        <span class="drawer-item-icon">🔋</span>Voltage Drop
+        <span class="drawer-item-icon">📉</span>Voltage Drop
       </button>
       <button class="drawer-item"
               data-target="box-tool"
+              data-hash="box"
               data-label="Box Fill"
               data-accent="var(--accent-green)">
         <span class="drawer-item-icon">📦</span>Box Fill
       </button>
       <button class="drawer-item"
               data-target="pull-tool"
+              data-hash="pull"
               data-label="Pull Box Size"
               data-accent="var(--accent-orange)">
-        <span class="drawer-item-icon">🪢</span>Pull Box Size
+        <span class="drawer-item-icon">📐</span>Pull Box Size
+      </button>
+      <button class="drawer-item"
+              data-target="ohms-tool"
+              data-hash="ohms"
+              data-label="Ohm's Law"
+              data-accent="var(--accent-purple)">
+        <span class="drawer-item-icon">⚙️</span>Ohm's Law
+      </button>
+
+      <button class="drawer-item"
+              data-target="panel-tool"
+              data-hash="panel"
+              data-label="Panel Schedule"
+              data-accent="var(--accent-teal)">
+        <span class="drawer-item-icon">📋</span>Panel Schedule
       </button>
 
       <div class="drawer-group-title">App</div>
       <button class="drawer-item"
               data-target="about-tool"
+              data-hash="about"
               data-label="About"
               data-accent="var(--primary)">
         <span class="drawer-item-icon">ℹ️</span>About
+      </button>
+
+      <div class="drawer-divider"></div>
+      <button class="drawer-item theme-toggle" aria-label="Switch to dark mode" title="Switch to dark mode">
+        <span class="drawer-item-icon">🌙</span>
+        <span class="theme-toggle-label">Dark mode</span>
       </button>
     </nav>
 

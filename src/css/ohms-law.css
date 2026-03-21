@@ -1,0 +1,89 @@
+/* ohms-law.css — Ohm's Law Calculator */
+
+/* ── Field wrap: input + unit label + per-field clear button ── */
+.ol-field-wrap {
+  display:     flex;
+  align-items: center;
+  gap:         6px;
+}
+
+.ol-field-wrap input {
+  flex:      1;
+  min-width: 0;
+}
+
+.ol-unit {
+  font-size:   0.88rem;
+  font-weight: 600;
+  color:       var(--text-muted);
+  min-width:   20px;
+  flex-shrink: 0;
+}
+
+/* ── Calculated / derived field highlight ── */
+input.ol-derived {
+  background:   color-mix(in srgb, var(--success) 10%, var(--card-bg));
+  border-color: var(--success);
+  color:        var(--success);
+  font-weight:  600;
+}
+
+input.ol-derived:focus {
+  border-color: var(--success);
+  box-shadow:   0 0 0 2px color-mix(in srgb, var(--success) 20%, transparent);
+}
+
+/* ── Action buttons row ── */
+.ol-actions {
+  display:    flex;
+  gap:        10px;
+  margin-top: 4px;
+  flex-wrap:  wrap;
+}
+
+.ol-btn-clear-all {
+  background: var(--surface-inset);
+  color:      var(--primary);
+  border:     1px solid var(--border);
+}
+
+.ol-btn-clear-all:hover { background: var(--surface-row); }
+
+/* ── Status / hint message ── */
+.ol-status {
+  margin:     10px 0 0;
+  font-size:  0.82rem;
+  min-height: 1.3em;
+  color:      var(--text-muted);
+}
+
+.ol-status--error { color: var(--danger);     }
+.ol-status--hint  { color: var(--text-muted); }
+
+/* ── PIRE wheel image area ── */
+.ol-pire-wrap {
+  margin-top:      20px;
+  border:          2px dashed var(--border);
+  border-radius:   var(--radius);
+  min-height:      220px;
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  overflow:        hidden;
+}
+
+.ol-pire-wrap img {
+  width:        100%;
+  height:       auto;
+  display:      block;
+  border-radius: calc(var(--radius) - 2px);
+}
+
+/* Placeholder text shown when no image is present */
+.ol-pire-placeholder {
+  font-size:  0.82rem;
+  color:      var(--text-muted);
+  text-align: center;
+  padding:    24px;
+  line-height: 1.5;
+}

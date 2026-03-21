@@ -31,11 +31,14 @@
 :root {
   /* Brand / structure */
   --primary:          #2c3e50;
-  --accent-blue:      #5291cf;   /* Conduit Fill card accent */
+  --text:             var(--primary);  /* alias — use wherever base text color is needed */
+  --accent-blue:      #5291cf;   /* Conduit Fill / Transformer card accent */
   --accent-yellow:    #f1c40f;   /* Voltage Drop card accent */
   --accent-green:     #27ae60;   /* Box Fill card accent */
   --accent-orange:    #e67e22;   /* Pull Box card accent */
   --accent-red:       #c0392b;   /* Service Load card accent */
+  --accent-purple:    #9b59b6;   /* Ohm's Law card accent */
+  --accent-teal:      #00897b;   /* Panel Schedule card accent */
   --danger:           #e74c3c;
   --success:          #27ae60;
 
@@ -173,11 +176,17 @@ body {
 
 /* ── 3. Page layout ── */
 .container {
-  max-width:      640px;
+  max-width:      720px;
   margin:         0 auto;
   display:        flex;
   flex-direction: column;
   gap:            24px;
+}
+
+/* ── Desktop: wider content area ── */
+@media (min-width: 768px) {
+  .container { max-width: 800px; }
+  .card       { padding: 28px 32px; }
 }
 
 
@@ -251,6 +260,8 @@ body {
 .card--green  { border-top-color: var(--accent-green); }
 .card--orange { border-top-color: var(--accent-orange); }
 .card--red    { border-top-color: var(--accent-red); }
+.card--purple { border-top-color: var(--accent-purple); }
+.card--teal   { border-top-color: var(--accent-teal);   }
 
 .card-header {
   margin-bottom: 20px;
@@ -267,6 +278,14 @@ body {
   border:     0;
   border-top: 1px solid var(--divider);
   margin:     16px 0;
+}
+
+/* Short description shown below a card title to explain the tool */
+.tool-desc {
+  margin:      -12px 0 16px;
+  font-size:   0.82rem;
+  color:       var(--text-muted);
+  line-height: 1.5;
 }
 
 /* Tool sections are hidden by default; navigation.js adds .active to show one */
@@ -288,7 +307,7 @@ body {
   justify-content: space-between;
   background:      var(--nav-bg);
   border-radius:   12px;
-  padding:         0 4px 0 16px;
+  padding:         0 16px 0 4px;
   height:          52px;
   box-shadow:      0 4px 12px rgba(0, 0, 0, 0.08);
   position:        sticky;
@@ -297,28 +316,26 @@ body {
 }
 
 .nav-bar-title {
-  display:     flex;
-  align-items: center;
-  gap:         10px;
-  font-size:   0.9rem;
-  font-weight: 700;
-  color:       var(--primary);
-  min-width:   0;        /* allow text truncation */
+  position:       absolute;
+  left:           50%;
+  transform:      translateX(-50%);
+  height:         100%;
+  display:        flex;
+  align-items:    center;
+  pointer-events: none;
+  max-width:      calc(100% - 120px);
+  border-bottom:  3px solid transparent;
+  box-sizing:     border-box;
+  transition:     border-color 0.2s ease;
 }
 
-.nav-bar-title span:last-child {
+#nav-bar-label {
+  font-size:     0.9rem;
+  font-weight:   700;
+  color:         var(--primary);
   white-space:   nowrap;
   overflow:      hidden;
   text-overflow: ellipsis;
-}
-
-.nav-accent-dot {
-  width:        9px;
-  height:       9px;
-  border-radius: 50%;
-  flex-shrink:  0;
-  background:   var(--accent-red);
-  transition:   background 0.2s ease;
 }
 
 /* Hamburger button */
@@ -368,14 +385,14 @@ body {
 .drawer {
   position:    fixed;
   top:         0;
-  right:       0;
+  left:       0;
   bottom:      0;
   width:       min(300px, 85vw);
   background:  var(--card-bg);
   box-shadow:  -8px 0 32px rgba(0, 0, 0, 0.18);
   z-index:     201;
   overflow-y:  auto;
-  transform:   translateX(100%);
+  transform:   translateX(-100%);
   transition:  transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   padding-bottom: 32px;
 }
@@ -404,17 +421,21 @@ body {
   width:         36px;
   height:        36px;
   border:        none;
-  background:    var(--surface-inset);
+  background:    var(--status-err-bg);
   border-radius: 8px;
   cursor:        pointer;
   font-size:     1rem;
-  color:         var(--primary);
+  color:         var(--danger);
   display:       flex;
   align-items:   center;
   justify-content: center;
   transition:    background 0.15s;
+  border: 1px solid color-mix(in srgb, var(--danger) 25%, transparent);
 }
-.drawer-close:hover { background: var(--border); }
+.drawer-close:hover {
+  background: color-mix(in srgb, var(--danger) 25%, var(--card-bg));
+  color:      var(--danger);
+}
 
 .drawer-group-title {
   font-size:      0.65rem;
@@ -465,35 +486,10 @@ body {
 }
 
 
-/* ── Theme toggle button (fixed, bottom-left) ── */
-.theme-toggle {
-  position:        fixed;
-  bottom:          20px;
-  left:            20px;
-  width:           44px;
-  height:          44px;
-  border-radius:   50%;
-  border:          2px solid var(--border);
-  background:      var(--card-bg);
-  color:           var(--primary);
-  font-size:       1.2rem;
-  line-height:     1;
-  cursor:          pointer;
-  box-shadow:      var(--shadow);
-  z-index:         200;
-  display:         flex;
-  align-items:     center;
-  justify-content: center;
-  transition:      background 0.2s, border-color 0.2s, transform 0.15s, box-shadow 0.15s;
-}
-
-.theme-toggle:hover {
-  transform:  scale(1.08);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
-}
-
-.theme-toggle:active {
-  transform: scale(0.95);
+.drawer-divider {
+  height:     1px;
+  background: var(--border);
+  margin:     8px 0;
 }
 
 
